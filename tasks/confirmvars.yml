@@ -1,0 +1,31 @@
+# Print all the required user variables to confirm
+# they are set. Does not confirm that they are correct.
+#
+- shell: >
+    cat <<EOF
+      url: http://{{ ebrc.httpd.vhost }}/{{ ebrc.tomcat.webapp }}/
+      install path: "{{ ebrc.website._path }}"
+      wdk.modelname: "{{ ebrc.wdk.modelname }}"
+      wdk.modelconfig.userdb.connectionurl: "{{ ebrc.wdk.modelconfig.userdb.connectionurl }}"
+      wdk.modelconfig.userdb.login: "{{ ebrc.wdk.modelconfig.userdb.login }}"
+      wdk.modelconfig.userdb.password: "{{ ebrc.wdk.modelconfig.userdb.password }}"
+      wdk.modelconfig.appdb.connectionurl: "{{ ebrc.wdk.modelconfig.appdb.connectionurl }}"
+      wdk.modelconfig.appdb.login: "{{ ebrc.wdk.modelconfig.appdb.login }}"
+      wdk.modelconfig.appdb.password: "{{ ebrc.wdk.modelconfig.appdb.password }}"
+      httpd.vhost: "{{ ebrc.httpd.vhost }}"
+      httpd.basic_auth_required: "{{ ebrc.httpd.basic_auth_required }}"
+      tomcat.webapp: "{{ ebrc.tomcat.webapp }}"
+      tomcat.instance: "{{ ebrc.tomcat.instance }}"
+      tomcat.majorversion: "{{ ebrc.tomcat.majorversion }}"
+      website.owner: "{{ ebrc.website.owner }}"
+      website.do_code_checkout: "{{ ebrc.website.do_code_checkout }}"
+      website.do_build: "{{ ebrc.website.do_build }}"
+      svn.locations.0.location.local: "{{ ebrc.svn.locations.0.location.local }}"
+      svn.locations.0.location.remote: "{{ ebrc.svn.locations.0.location.remote }}"
+      svn.locations.0.location.revision: "{{ ebrc.svn.locations.0.location.revision }}"
+  register: report
+  changed_when: False
+
+- name: Confirm required variables are set
+  debug:
+    msg: "{{ report.stdout_lines }}"

@@ -1,0 +1,87 @@
+---
+wdk:
+  modelname: TrichDB
+  modelconfig:
+    userdb:
+      connectionurl: "jdbc:oracle:oci:@apicommDevS"
+      login: janeuser
+      password: s3cr3t
+    appdb:
+      connectionurl: "jdbc:oracle:oci:@tvag031s"
+      login: janeuser
+      password: s3cr3t
+
+httpd:
+  vhost: sa.vm.trichdb.org
+  basic_auth_required: false
+
+tomcat:
+  webapp: trichdb.sa
+  instance: TrichDB
+  majorversion: 6
+
+website:
+  owner: vagrant
+  do_code_checkout: True
+  do_build: True
+
+# revision is optional
+# curl -s http://q2.toxodb.org/dashboard/json | jq .svn.locations
+svn:
+  locations:
+    - location:
+        local: "install"
+        remote: "https://www.cbil.upenn.edu/svn/gus/install/branches/api-build-31"
+        revision: "19859"
+    - location:
+        local: "FgpUtil"
+        remote: "https://www.cbil.upenn.edu/svn/gus/FgpUtil/branches/api-build-31"
+        revision: "19859"
+    - location:
+        local: "WSF"
+        remote: "https://www.cbil.upenn.edu/svn/gus/WSF/branches/api-build-31"
+        revision: "19859"
+    - location:
+        local: "WDK"
+        remote: "https://www.cbil.upenn.edu/svn/gus/WDK/branches/api-build-31"
+        revision: "19859"
+    - location:
+        local: "EuPathSiteCommon"
+        remote: "https://www.cbil.upenn.edu/svn/apidb/EuPathSiteCommon/branches/api-build-31"
+        revision: "80458"
+    - location:
+        local: "EuPathWebSvcCommon"
+        remote: "https://www.cbil.upenn.edu/svn/apidb/EuPathWebSvcCommon/branches/api-build-31"
+        revision: "80458"
+    - location:
+        local: "GBrowse"
+        remote: "https://www.cbil.upenn.edu/svn/apidb/GBrowse/branches/api-build-31"
+        revision: "80458"
+    - location:
+        local: "CBIL"
+        remote: null
+        revision: null
+    - location:
+        local: "ReFlow"
+        remote: "https://www.cbil.upenn.edu/svn/gus/ReFlow/branches/api-build-31"
+        revision: "19859"
+    - location:
+        local: "ApiCommonShared"
+        remote: "https://www.cbil.upenn.edu/svn/apidb/ApiCommonShared/branches/api-build-31"
+        revision: "80458"
+    - location:
+        local: "EuPathPresenters"
+        remote: "https://www.cbil.upenn.edu/svn/apidb/EuPathPresenters/branches/api-build-31"
+        revision: "80458"
+    - location:
+        local: "ApiCommonWebsite"
+        remote: "https://www.cbil.upenn.edu/svn/apidb/ApiCommonWebsite/branches/api-build-31"
+        revision: "80458"
+    - location:
+        local: "ApiCommonWebService"
+        remote: "https://www.cbil.upenn.edu/svn/apidb/ApiCommonWebService/branches/api-build-31"
+        revision: "80458"
+    - location:
+        local: "EuPathDatasets"
+        remote: "https://www.cbil.upenn.edu/svn/apidb/EuPathDatasets/branches/api-build-31"
+        revision: "80458"

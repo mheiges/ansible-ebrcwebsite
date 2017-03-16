@@ -1,0 +1,95 @@
+---
+
+- include: gather_vars.yml
+
+- include: confirmvars.yml
+
+- debug: msg="USERDB {{ ebrc.wdk.modelconfig.userdb.connectionurl }}"
+
+- set_fact: install_prop_file="/tmp/installWdkSite_{{ ebrc.httpd.vhost }}.prop"
+
+- set_fact: userdb="{{ebrc.wdk.modelconfig.userdb._alias}}"
+- set_fact: appdb="{{ ebrc.wdk.modelconfig.appdb._alias }}"
+
+- name: "Create site installation property file"
+  template:
+    src: templates/installWdkSite.prop.j2
+    dest: "{{ install_prop_file }}"
+  vars:
+    vhost: "{{ ebrc.httpd.vhost }}"
+    product: "{{ ebrc.wdk.modelname  }}"
+    basic_auth_required: "{{ ebrc.httpd.basic_auth_required | lower }}"
+    owner: "{{ ebrc.website.owner }}"
+    webapp_ctx: "{{ ebrc.tomcat.webapp }}"
+    tomcat_instance: "{{ ebrc.tomcat.instance }}"
+    tomcat_major_version: "{{ ebrc.tomcat.majorversion }}"
+    appdb: "{{ ebrc.wdk.modelconfig.appdb._alias }}"
+    userdb: "{{ ebrc.wdk.modelconfig.userdb._alias }}"
+
+- name: "Check Tomcat status"
+  command: "instance_manager status" 
+  register: tomcat_status
+  changed_when: False
+
+- name: "Enable {{ ebrc.tomcat.instance }} tomcat instance"
+  command: "instance_manager enable {{ ebrc.tomcat.instance }}"
+  become: True
+  when: tomcat_status.stdout.find(ebrc.tomcat.instance) == -1
+
+- name: Check for existing /var/www/{{ product }}/{{ webapp_ctx }}
+  stat: path="/var/www/{{ ebrc.wdk.modelname }}/{{ ebrc.tomcat.webapp }}"
+  register: site_dir
+
+- name: run installWdkSite
+  shell: "echo y | installWdkSite {{ install_prop_file }}"
+  when: site_dir.stat.exists == False
+
+- name: "Create .euparc file"
+  template:
+    src: templates/euparc.j2
+    dest: "~/.euparc"
+  vars:
+    appdb_username: "{{ ebrc.wdk.modelconfig.appdb.login }}"
+    appdb_password: "{{ ebrc.wdk.modelconfig.appdb.password }}"
+    userdb_username: "{{ ebrc.wdk.modelconfig.userdb.login }}"
+    userdb_password: "{{ ebrc.wdk.modelconfig.userdb.password }}"
+
+- name: "Create master_configuration_set file"
+  template:
+    src: templates/master_configuration_set.j2
+    dest: "{{ ebrc.website._path }}/etc/master_configuration_set"
+  become: True
+  become_user: "{{ ebrc.website.owner }}"
+  vars:
+    vhost: "{{ ebrc.httpd.vhost }}"
+    appdb: "{{ ebrc.wdk.modelconfig.appdb._alias }}"
+    appdb_username: "{{ ebrc.wdk.modelconfig.appdb.login }}"
+    userdb: "{{ ebrc.wdk.modelconfig.userdb._alias }}"
+    userdb_username: "{{ ebrc.wdk.modelconfig.userdb.login }}"
+
+- subversion: repo="{{ item.location.remote }}"
+              dest="{{  ebrc.website._path  }}/project_home/{{ item.location.local }}"
+              revision="{{ item.location.revision|default('') }}"
+              update=no
+  with_items: "{{ ebrc.svn.locations }}"
+  become: True
+  become_user: "{{ ebrc.website.owner }}"
+  when: ebrc.website.do_code_checkout and ebrc.svn is defined
+  register: subversion_checkout
+
+- name: "Running rebuilder. This will take a while..."
+  command: >
+    /usr/local/bin/rebuilder {{ ebrc.httpd.vhost }} \
+      --use-configula     \
+      --non-interactive   \
+      --reinstall-config  \
+      --skip-svn-update
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
+  async: 1800
+  poll: 5
+  become: True
+  become_user: "{{ ebrc.website.owner }}"
+  when: ebrc.website.do_build and subversion_checkout is defined and
+        (subversion_checkout|succeeded and not subversion_checkout|skipped)
+

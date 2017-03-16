@@ -1,0 +1,21 @@
+# minimum properties required if you are using
+# all other required values from /dashboard JSON API.
+# These are the properties that /dashboard does not supply.
+#
+---
+dashboard:
+  hostname: w1.trichdb.org
+  auth:
+    username: yaknow
+    password: nott311ing
+wdk:
+  modelconfig:
+    userdb:
+      password: s3cr3t
+    appdb:
+      password: s3cr3t
+httpd:
+  vhost: sa.vm.trichdb.org
+  basic_auth_required: false
+website:
+  owner: vagrant

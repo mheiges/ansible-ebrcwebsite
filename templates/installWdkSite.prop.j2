@@ -1,0 +1,120 @@
+# 2017/03/09 15:15:32 mheiges
+#----------------------------------------------------------------------#
+#       property file for installWdkSite                            
+#       Format is standard bash variable assignment                    #
+#       (no spaces flanking '=')                                       #
+#----------------------------------------------------------------------#
+
+#
+# PRODUCT
+# The site will be installed in a subdirectory of  /var/www/${PRODUCT} 
+# and source code will checked out from svn's ApiComomonWebsite
+#
+PRODUCT={{ product }}
+
+
+#
+# HOST
+# fqdn for the website.
+# To be used as httpd://$HOST/
+# Also the Apache httpd configuration file and DocumentRoot symlink
+# will be named after $HOST
+#
+# Check that this HOST name resolves to the IP address of the server
+# on which you are installing. You can use the dig command for that:
+#      dig +short mheiges.cryptodb.org
+#
+HOST={{ vhost }}
+
+#
+# BASIC_AUTH_REQUIRED
+# If 'false' or 'no', no basic authentication (e.g. mod_auth_tkt) will
+# be required to access the website. Otherwise, basic authentication
+# will be required. The login should be enabled for development and
+# other sites that might expose unpublished data.
+#
+BASIC_AUTH_REQUIRED={{ basic_auth_required|bool }}
+
+#
+# OWNER
+# Optional. If defined the final website files will be owned by this user.
+# Othewise the files will be owned by the user running the installation.
+#
+OWNER={{ owner }}
+
+#
+# R_PROGRAM
+# Path to a GDD compatible R executable. This value will be added to the
+# webapp.prop file generated for the site.
+#
+R_PROGRAM=/usr/bin/R
+
+#
+# WEBAPP
+# This is the name of the tomcat web app such that it can be addressed
+# as http://${HOST}:${TOMCAT_PORT}/${WEBAPP}/
+#
+# Also this will be the name of the subdirectory where the site will 
+# be installed: /var/www/${PRODUCT}/${WEBAPP}, 
+#
+# IMPORTANT: this name should match the webapp name of the corresponding 
+# production site plus a local identifier separated by a non-alphabetic 
+# character. For example, PlasmoDB's production site uses 'plasmo' for the
+# webapp. So valid development names include:
+#    plasmo56.jbloe
+#    plasmo-5.6
+#    plasmo.trunk
+# This is not valid for PlasmoDB because of the appended 'db':
+#    plasmodb.trunk
+# This is so urls can be written into webpages using the 
+# production form (/plasmo/queries_tools.jsp) and development Apache sites 
+# will redirect to the proper webapp (/plasmo56.jbloe/queries_tools.jsp).
+#
+WEBAPP={{ webapp_ctx }}
+
+
+#
+# TOMCAT_INSTANCE
+# The tomcat instance name in which to install.
+# See subdirectories of /usr/local/tomcat_instances/ 
+# for acceptable names
+#
+TOMCAT_INSTANCE={{ tomcat_instance }}
+
+#
+# TOMCAT_MAJOR_VERSION
+# The major version of Tomcat you are deploying into.
+#
+TOMCAT_MAJOR_VERSION={{ tomcat_major_version }}
+
+
+#----------------------------------------------------------------------#
+#                                                                      #
+#   You probably do not need to edit the following server-specific     #
+#   properties.                                                        #
+#                                                                      #
+#----------------------------------------------------------------------#
+
+#
+# WEB_BASE_DIR
+# The parent directory for the $PRODUCT container.
+# For example, ${WEB_BASE_DIR}/${PRODUCT}/${WEBAPP} 
+# might translate to /var/www/CryptoDB/cryptodb3.4
+#
+WEB_BASE_DIR=/var/www
+
+#
+# HTTPD_CONF_DIR
+# Location of Apache httpd config files. The template configuration 
+# file 'ApiDB.generic.conf.sample' is expected to be found here.
+# The config file for this site will be written to 
+# ${HTTPD_CONF_DIR}/enabled_sites/
+#
+HTTPD_CONF_DIR=/etc/httpd/conf
+
+#
+# TOMCAT_INSTANCES_DIR
+# Containing directory for tomcat instances.
+#
+TOMCAT_INSTANCES_DIR=/usr/local/tomcat_instances
+
