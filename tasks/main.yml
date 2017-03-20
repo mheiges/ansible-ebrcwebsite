@@ -26,15 +26,16 @@
     appdb: "{{ ebrc.wdk.modelconfig.appdb._alias }}"
     userdb: "{{ ebrc.wdk.modelconfig.userdb._alias }}"
 
-- name: "Check Tomcat status"
-  command: "instance_manager status" 
+- name: "Check {{ ebrc.tomcat.instance }} Tomcat status"
+  command: "instance_manager status {{ ebrc.tomcat.instance }}"
   register: tomcat_status
+  failed_when: False
   changed_when: False
 
 - name: "Enable {{ ebrc.tomcat.instance }} tomcat instance"
   command: "instance_manager enable {{ ebrc.tomcat.instance }}"
   become: True
-  when: tomcat_status.stdout.find(ebrc.tomcat.instance) == -1
+  when: tomcat_status.rc != 0
 
 - name: Check for existing /var/www/{{ product }}/{{ webapp_ctx }}
   stat: path="/var/www/{{ ebrc.wdk.modelname }}/{{ ebrc.tomcat.webapp }}"
