@@ -16,3 +16,5 @@ httpd:
   basic_auth_required: false
 website:
   owner: vagrant
+  do_code_checkout: true
+  do_build: true
