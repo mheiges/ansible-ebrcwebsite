@@ -13,7 +13,7 @@ wdk:
 
 httpd:
   vhost: sa.vm.foodb.org
-  basic_auth_required: false
+  basic_auth_required: False
 
 tomcat:
   webapp: foodb.sa
