@@ -5,9 +5,6 @@
 ---
 dashboard:
   hostname: dev.foodb.org
-  auth:
-    username: yaknow
-    password: nott311ing
 wdk:
   modelconfig:
     userdb:
