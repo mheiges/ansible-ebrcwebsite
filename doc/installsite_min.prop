@@ -4,7 +4,7 @@
 #
 ---
 dashboard:
-  hostname: w1.trichdb.org
+  hostname: dev.foodb.org
   auth:
     username: yaknow
     password: nott311ing
@@ -15,7 +15,7 @@ wdk:
     appdb:
       password: s3cr3t
 httpd:
-  vhost: sa.vm.trichdb.org
+  vhost: sa.vm.foodb.org
   basic_auth_required: false
 website:
   owner: vagrant

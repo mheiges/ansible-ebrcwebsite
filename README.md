@@ -1,7 +1,7 @@
-Role Name
+ebrcwebsite
 =========
 
-A brief description of the role goes here.
+Provisions a WDK-based EuPathDB BRC website.
 
 Requirements
 ------------
@@ -11,21 +11,49 @@ Any pre-requisites that may not be covered by Ansible itself or the role should 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+The `settings_file` variable must reference a YAML file with website-specific settings.
 
-Dependencies
-------------
+See `doc/installsite_full.prop` for the full collection of required
+website-specific settings. Many of the settings, such as SCM locations
+and database configurations can be taken from the /dashboard API of an
+existing site. If you leverage that then see `doc/installsite_min.prop`
+for the minimum collection of required website-specific settings. You
+can also construct your `settings_file` to fall somewhere between the
+full and minimum collection. Say, for example, you want your website to
+match dev.foodb.org except you want to change the database login to
+`gusfring` you can add custom `login` keys.
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+    dashboard:
+      hostname: dev.foodb.org
+      auth:
+        username: yaknow
+        password: nott311ing
+    wdk:
+      modelconfig:
+        userdb:
+          login: gusfring
+          password: s3cr3t
+        appdb:
+          login: gusfring
+          password: s3cr3t
+    httpd:
+      vhost: sa.vm.foodb.org
+      basic_auth_required: false
+    website:
+      owner: vagrant
+
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
+    - hosts: all
+      become: no
+      gather_facts: yes
       roles:
-         - { role: username.rolename, x: 42 }
+        - { role: ebrcwebsite }
+
+
+    ansible-playbook --extra-vars "settings_file=$PWD/installsite.yml" playbook.yml
 
 License
 -------
@@ -35,4 +63,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+help@eupathdb.org

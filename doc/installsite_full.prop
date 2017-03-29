@@ -1,6 +1,6 @@
 ---
 wdk:
-  modelname: TrichDB
+  modelname: FooDB
   modelconfig:
     userdb:
       connectionurl: "jdbc:oracle:oci:@apicommDevS"
@@ -12,12 +12,12 @@ wdk:
       password: s3cr3t
 
 httpd:
-  vhost: sa.vm.trichdb.org
+  vhost: sa.vm.foodb.org
   basic_auth_required: false
 
 tomcat:
-  webapp: trichdb.sa
-  instance: TrichDB
+  webapp: foodb.sa
+  instance: FooDB
   majorversion: 6
 
 website:
@@ -26,7 +26,7 @@ website:
   do_build: True
 
 # revision is optional
-# curl -s http://q2.toxodb.org/dashboard/json | jq .svn.locations
+# curl -s http://dev.foodb.org/dashboard/json | jq .svn.locations
 svn:
   locations:
     - location:

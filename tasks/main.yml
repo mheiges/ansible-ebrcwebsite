@@ -1,15 +1,8 @@
 ---
 
-- include: gather_vars.yml
-
 - include: confirmvars.yml
 
-- debug: msg="USERDB {{ ebrc.wdk.modelconfig.userdb.connectionurl }}"
-
 - set_fact: install_prop_file="/tmp/installWdkSite_{{ ebrc.httpd.vhost }}.prop"
-
-- set_fact: userdb="{{ebrc.wdk.modelconfig.userdb._alias}}"
-- set_fact: appdb="{{ ebrc.wdk.modelconfig.appdb._alias }}"
 
 - name: "Create site installation property file"
   template:
@@ -27,7 +20,7 @@
     userdb: "{{ ebrc.wdk.modelconfig.userdb._alias }}"
 
 - name: "Check {{ ebrc.tomcat.instance }} Tomcat status"
-  command: "instance_manager status {{ ebrc.tomcat.instance }}"
+  command: "instance_manager status {{ ebrc.tomcat.instance }}" 
   register: tomcat_status
   failed_when: False
   changed_when: False
@@ -37,7 +30,7 @@
   become: True
   when: tomcat_status.rc != 0
 
-- name: Check for existing /var/www/{{ product }}/{{ webapp_ctx }}
+- name: Check for existing /var/www/{{ ebrc.wdk.modelname }}/{{ ebrc.tomcat.webapp }}
   stat: path="/var/www/{{ ebrc.wdk.modelname }}/{{ ebrc.tomcat.webapp }}"
   register: site_dir
 
@@ -78,7 +71,10 @@
   when: ebrc.website.do_code_checkout and ebrc.svn is defined
   register: subversion_checkout
 
-- name: "Running rebuilder. This will take a while..."
+- name: |
+    Running rebuilder. This will take a while.
+    `tail -f {{ ebrc.website._path }}/gus_home/.buildlog/rebuilder.log`
+    on guest for live status
   command: >
     /usr/local/bin/rebuilder {{ ebrc.httpd.vhost }} \
       --use-configula     \
