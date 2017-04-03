@@ -5,6 +5,9 @@
 ---
 dashboard:
   hostname: dev.foodb.org
+  auth:
+    username: yaknow
+    password: nott311ing
 wdk:
   modelconfig:
     userdb:
@@ -13,8 +16,6 @@ wdk:
       password: s3cr3t
 httpd:
   vhost: sa.vm.foodb.org
-  basic_auth_required: False
+  basic_auth_required: false
 website:
   owner: vagrant
-  do_code_checkout: False
-  do_build: False
