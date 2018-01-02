@@ -20,6 +20,8 @@
     tomcat_major_version: "{{ ebrc.tomcat.majorversion }}"
     appdb: "{{ ebrc.wdk.modelconfig.appdb._alias }}"
     userdb: "{{ ebrc.wdk.modelconfig.userdb._alias }}"
+    accountdb: "{{ ebrc.wdk.modelconfig.accountdb._alias }}"
+    release_stage: "{{ ebrc.httpd.release_stage | upper }}"
 
 - name: "Check {{ ebrc.tomcat.instance }} Tomcat status"
   command: "instance_manager status {{ ebrc.tomcat.instance }}" 
@@ -40,28 +42,34 @@
   shell: "echo y | installWdkSite {{ install_prop_file }}"
   when: site_dir.stat.exists == False
 
-- name: "Create .euparc file"
-  template:
-    src: templates/euparc.j2
-    dest: "~/.euparc"
-  vars:
-    appdb_username: "{{ ebrc.wdk.modelconfig.appdb.login }}"
-    appdb_password: "{{ ebrc.wdk.modelconfig.appdb.password }}"
-    userdb_username: "{{ ebrc.wdk.modelconfig.userdb.login }}"
-    userdb_password: "{{ ebrc.wdk.modelconfig.userdb.password }}"
+# - name: "Create .euparc file"
+#   template:
+#     src: templates/euparc.j2
+#     dest: "~/.euparc"
+#   vars:
+#     appdb_login: "{{ ebrc.wdk.modelconfig.appdb.login }}"
+#     appdb_password: "{{ ebrc.wdk.modelconfig.appdb.password }}"
+#     userdb_login: "{{ ebrc.wdk.modelconfig.userdb.login }}"
+#     userdb_password: "{{ ebrc.wdk.modelconfig.userdb.password }}"
+#     accountdb_login: "{{ ebrc.wdk.modelconfig.accountdb.login }}"
+#     accountdb_password: "{{ ebrc.wdk.modelconfig.accountdb.password }}"
 
-- name: "Create master_configuration_set file"
+- name: "Create Conifer input file"
   template:
-    src: templates/master_configuration_set.j2
-    dest: "{{ ebrc.website._path }}/etc/master_configuration_set"
+    src: templates/conifer_site_vars.yml.j2
+    dest: "{{ ebrc.website._path }}/etc/conifer_site_vars.yml"
   become: True
   become_user: "{{ ebrc.website.owner }}"
   vars:
-    vhost: "{{ ebrc.httpd.vhost }}"
     appdb: "{{ ebrc.wdk.modelconfig.appdb._alias }}"
-    appdb_username: "{{ ebrc.wdk.modelconfig.appdb.login }}"
+    appdb_password: "{{ ebrc.wdk.modelconfig.appdb.password }}"
+    appdb_login: "{{ ebrc.wdk.modelconfig.appdb.login }}"
     userdb: "{{ ebrc.wdk.modelconfig.userdb._alias }}"
-    userdb_username: "{{ ebrc.wdk.modelconfig.userdb.login }}"
+    userdb_login: "{{ ebrc.wdk.modelconfig.userdb.login }}"
+    userdb_password: "{{ ebrc.wdk.modelconfig.userdb.password }}"
+    accountdb: "{{ ebrc.wdk.modelconfig.accountdb._alias }}"
+    accountdb_login: "{{ ebrc.wdk.modelconfig.accountdb.login }}"
+    accountdb_password: "{{ ebrc.wdk.modelconfig.accountdb.password }}"
 
 - subversion: repo="{{ item.location.remote }}"
               dest="{{  ebrc.website._path  }}/project_home/{{ item.location.local }}"
@@ -79,7 +87,7 @@
     on guest for live status
   command: >
     /usr/local/bin/rebuilder {{ ebrc.httpd.vhost }} \
-      --use-configula     \
+      --use-conifer     \
       --non-interactive   \
       --reinstall-config  \
       --skip-svn-update
