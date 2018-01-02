@@ -57,7 +57,8 @@ class ActionModule(ActionBase):
       'wdk': {
         'modelconfig': {
           'appdb': {'_alias': regex.sub('', presettings['wdk']['modelconfig']['appdb']['connectionurl']) },
-          'userdb': {'_alias': regex.sub('', presettings['wdk']['modelconfig']['userdb']['connectionurl']) }
+          'userdb': {'_alias': regex.sub('', presettings['wdk']['modelconfig']['userdb']['connectionurl']) },
+          'accountdb': {'_alias': regex.sub('', presettings['wdk']['modelconfig']['accountdb']['connectionurl']) },
         }
       }
     }
