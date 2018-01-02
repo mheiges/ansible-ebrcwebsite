@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <euparc>
   <database>
-    <user login='{{ userdb_username }}' password='{{ userdb_password }}' />
-    <user login='{{ appdb_username }}' password='{{ appdb_password }}' />
+    <user login='{{ userdb_login }}' password='{{ userdb_password }}' />
+    <user login='{{ accountdb_login }}' password='{{ accountdb_password }}' />
+    <user login='{{ appdb_login }}' password='{{ appdb_password }}' />
   </database>
   <oauth>
     <client clientId='apicomponentsite' clientSecret='fakecreds' />
