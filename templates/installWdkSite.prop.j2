@@ -1,14 +1,13 @@
-# 2017/03/09 15:15:32 mheiges
+# 2017/08/24 11:49:08 mheiges
 #----------------------------------------------------------------------#
-#       property file for installWdkSite                            
+#       property file for installWdkSite
 #       Format is standard bash variable assignment                    #
 #       (no spaces flanking '=')                                       #
 #----------------------------------------------------------------------#
 
 #
 # PRODUCT
-# The site will be installed in a subdirectory of  /var/www/${PRODUCT} 
-# and source code will checked out from svn's ApiComomonWebsite
+# The site will be installed in a subdirectory of  /var/www/${PRODUCT}
 #
 PRODUCT={{ product }}
 
@@ -36,54 +35,43 @@ HOST={{ vhost }}
 BASIC_AUTH_REQUIRED={{ basic_auth_required|bool }}
 
 #
+# WEBSITE_RELEASE_STAGE
+# One of [DEVELOPMENT, INTEGRATE, FEATURE, ALPHA, QA, BETA, WWW]
+# This affects build-time settings (which can be changed post install
+# if you can deduce from this script which files are affected).
+# Also related: https://wiki.apidb.org/index.php/WebsiteReleaseStages
+#
+WEBSITE_RELEASE_STAGE={{ release_stage }}
+
+#
 # OWNER
 # Optional. If defined the final website files will be owned by this user.
 # Othewise the files will be owned by the user running the installation.
 #
 OWNER={{ owner }}
 
-#
-# R_PROGRAM
-# Path to a GDD compatible R executable. This value will be added to the
-# webapp.prop file generated for the site.
-#
-R_PROGRAM=/usr/bin/R
 
 #
-# WEBAPP
-# This is the name of the tomcat web app such that it can be addressed
-# as http://${HOST}:${TOMCAT_PORT}/${WEBAPP}/
+# This is the suffix for the WEBAPP name. Typically it will be the user
+# name of the person that owns the site.
+# See WEBAPP below for more details.
 #
-# Also this will be the name of the subdirectory where the site will 
-# be installed: /var/www/${PRODUCT}/${WEBAPP}, 
-#
-# IMPORTANT: this name should match the webapp name of the corresponding 
-# production site plus a local identifier separated by a non-alphabetic 
-# character. For example, PlasmoDB's production site uses 'plasmo' for the
-# webapp. So valid development names include:
-#    plasmo56.jbloe
-#    plasmo-5.6
-#    plasmo.trunk
-# This is not valid for PlasmoDB because of the appended 'db':
-#    plasmodb.trunk
-# This is so urls can be written into webpages using the 
-# production form (/plasmo/queries_tools.jsp) and development Apache sites 
-# will redirect to the proper webapp (/plasmo56.jbloe/queries_tools.jsp).
-#
-WEBAPP={{ webapp_ctx }}
+{# WEBAPP_SUFFIX is not used in this template, WEBAPP is explicit #}
+WEBAPP_SUFFIX=NA
 
 
 #
 # TOMCAT_INSTANCE
 # The tomcat instance name in which to install.
-# See subdirectories of /usr/local/tomcat_instances/ 
+# See subdirectories of /usr/local/tomcat_instances/
 # for acceptable names
 #
-TOMCAT_INSTANCE={{ tomcat_instance }}
+TOMCAT_INSTANCE=${PRODUCT}
 
 #
 # TOMCAT_MAJOR_VERSION
 # The major version of Tomcat you are deploying into.
+# (5|6|7|8|9|...)
 #
 TOMCAT_MAJOR_VERSION={{ tomcat_major_version }}
 
@@ -96,18 +84,70 @@ TOMCAT_MAJOR_VERSION={{ tomcat_major_version }}
 #----------------------------------------------------------------------#
 
 #
+# Mapping of PRODUCT to webapp prefix.
+# This prefix and WEBAPP_SUFFIX are combined to form
+# the name of the WEBAPP
+#
+declare -A WEBAPP_PREFIX_MAP=(
+  [AmoebaDB]=amoeba [CryptoDB]=cryptodb
+  [ClinEpiDB]=ce [ICEMR]=ce [Gates]=ce
+  [EuPathDB]=eupathdb [FungiDB]=fungidb [GiardiaDB]=giardiadb
+  [HostDB]=hostdb [MicrobiomeDB]=mbio [MicrosporidiaDB]=micro
+  [OrthoMCL]=orthomcl [PiroplasmaDB]=piro [PlasmoDB]=plasmo
+  [SchistoDB]=schisto [ToxoDB]=toxo [TrichDB]=trichdb
+  [TriTrypDB]=tritrypdb
+)
+
+
+#
+# WEBAPP
+# This is the name of the tomcat web app such that it can be addressed
+# as http://${HOST}:${TOMCAT_PORT}/${WEBAPP}/
+#
+# Also this will be the name of the subdirectory where the site will
+# be installed: /var/www/${PRODUCT}/${WEBAPP},
+#
+# The default is to construct the name from the prefix and suffix parts
+# defined above so you do not need to change this.
+#
+# IMPORTANT: this name should match the webapp name of the corresponding
+# production site plus a local identifier separated by a non-alphabetic
+# character. For example, PlasmoDB's production site uses 'plasmo' for the
+# webapp. So valid development names include:
+#    plasmo56.jbloe
+#    plasmo-5.6
+#    plasmo.trunk
+# This is not valid for PlasmoDB because of the appended 'db':
+#    plasmodb.trunk
+# This is so urls can be written into webpages using the
+# production form (/plasmo/queries_tools.jsp) and development Apache sites
+# will redirect to the proper webapp (/plasmo56.jbloe/queries_tools.jsp).
+#
+{# WEBAPP_PREFIX is not used in this template, WEBAPP is explicit #}
+WEBAPP_PREFIX=NA
+WEBAPP={{ webapp_ctx }}
+
+
+#
 # WEB_BASE_DIR
 # The parent directory for the $PRODUCT container.
-# For example, ${WEB_BASE_DIR}/${PRODUCT}/${WEBAPP} 
+# For example, ${WEB_BASE_DIR}/${PRODUCT}/${WEBAPP}
 # might translate to /var/www/CryptoDB/cryptodb3.4
 #
 WEB_BASE_DIR=/var/www
 
 #
+# R_PROGRAM
+# Path to a GDD compatible R executable. This value will be added to the
+# webapp.prop file generated for the site.
+#
+R_PROGRAM=/usr/bin/R
+
+#
 # HTTPD_CONF_DIR
-# Location of Apache httpd config files. The template configuration 
+# Location of Apache httpd config files. The template configuration
 # file 'ApiDB.generic.conf.sample' is expected to be found here.
-# The config file for this site will be written to 
+# The config file for this site will be written to
 # ${HTTPD_CONF_DIR}/enabled_sites/
 #
 HTTPD_CONF_DIR=/etc/httpd/conf
@@ -118,3 +158,5 @@ HTTPD_CONF_DIR=/etc/httpd/conf
 #
 TOMCAT_INSTANCES_DIR=/usr/local/tomcat_instances
 
+
+_PROPFILE_VERSION=0ad537d89633cb6dbf5723bb74013b7e
