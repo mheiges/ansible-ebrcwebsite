@@ -34,12 +34,10 @@ class ActionModule(ActionBase):
 
 
   def run(self, tmp=None, task_vars=None):
-    self._set_args()  
+    self._set_args()
     if task_vars is None:
       task_vars = dict()
     result = super(ActionModule, self).run(tmp, task_vars)
-    #value = 'foo'
-    #print "FOOOO {}".format(self.settings_file)
     usersettings = self.load_settings_file(self.settings_file)
     dashboardsettings_file = self.fetch_dashboard_json_to_file(usersettings['dashboard'])
     dashboardsettings = self.load_settings_file(dashboardsettings_file)
@@ -65,10 +63,19 @@ class ActionModule(ActionBase):
 
   def fetch_dashboard_json_to_file(self, dash_data):
     dash_host = dash_data['hostname']
-    dash_uri = 'http://' + dash_host + '/dashboard/json'
+
+    if 'token' in dash_data:
+      dash_token = dash_data['token']
+    else:
+      dash_token = None
+
+    dash_uri = "https://{}/dashboard/json".format(dash_host)
 
     try:
-      response = urllib2.urlopen(dash_uri)
+      request = urllib2.Request(dash_uri)
+      if dash_token is not None:
+        request.add_header("x-dashboard-security-token", dash_token)
+      response = urllib2.urlopen(request)
       content = response.read()
     except urllib2.HTTPError, e:
       print "HTTPError with %s: %s" % (dash_uri, e)

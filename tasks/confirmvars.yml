@@ -6,6 +6,7 @@
       url: http://{{ ebrc.httpd.vhost }}/{{ ebrc.tomcat.webapp }}/
       install path: "{{ ebrc.website._path }}"
       wdk.modelname: "{{ ebrc.wdk.modelname }}"
+      wdk.product: "{{ ebrc.wdk.product }}"
       wdk.modelconfig.userdb.connectionurl: "{{ ebrc.wdk.modelconfig.userdb.connectionurl }}"
       wdk.modelconfig.userdb._alias: "{{ ebrc.wdk.modelconfig.userdb._alias }}"
       wdk.modelconfig.userdb.login: "{{ ebrc.wdk.modelconfig.userdb.login }}"
